@@ -7,5 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kibiluzbad",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.9.3",
+    "express": "^4.10.3",
+    "morgan": "^1.5.0",
+    "nedb": "^0.11.1",
+    "npmlog": "^0.1.1",
+    "request": "^2.48.0",
+    "serve-favicon": "^2.1.7",
+    "thepiratebay": "^0.1.2"
+  }
 }
