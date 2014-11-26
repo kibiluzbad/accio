@@ -9,13 +9,21 @@
   "author": "kibiluzbad",
   "license": "ISC",
   "dependencies": {
+    "agenda": "^0.6.25",
+    "agenda-ui": "0.0.6",
+    "async": "^0.9.0",
     "body-parser": "^1.9.3",
     "express": "^4.10.3",
     "morgan": "^1.5.0",
+    "ncp": "^1.0.1",
     "nedb": "^0.11.1",
     "npmlog": "^0.1.1",
+    "readdir": "0.0.13",
     "request": "^2.48.0",
     "serve-favicon": "^2.1.7",
-    "thepiratebay": "^0.1.2"
+    "string": "^2.2.0",
+    "subdb": "0.0.1",
+    "thepiratebay": "^0.1.2",
+    "transmission": "^0.4.1"
   }
 }

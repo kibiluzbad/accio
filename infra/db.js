@@ -3,9 +3,11 @@
 const
     Datastore = require('nedb'),
     path = require('path'),
-    db = new Datastore({ filename: path.join(__dirname,'../.db/accio'), autoload: true });
+    series = new Datastore({ filename: path.join(__dirname,'../.db/accio/series.db'), autoload: true }),
+    torrents = new Datastore({ filename: path.join(__dirname,'../.db/accio/torrents.db'), autoload: true });
 
-module.exports = db;
+exports.series = series;
+exports.torrents = torrents;
 
 
 

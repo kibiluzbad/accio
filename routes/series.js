@@ -4,8 +4,18 @@ const
     express = require('express'),
     router = express.Router(),
     request = require('request'),
-    tpb = require('thepiratebay'),
-    db = require('./../infra/db.js');
+    db = require('./../infra/db.js'),
+    scheduler = require('./../infra/scheduler.js'),
+    util = require('util'),
+    S = require('string');
+
+
+router.get('/', function (req, res) {
+    db.find({}, function (err, docs) {
+        if(err) res.status(500).json(err)
+        else  res.json(docs);
+    });
+});
 
 router.get('/search', function (req, res) {
     let url = 'http://www.omdbapi.com/?s='+ req.query.q;
@@ -32,9 +42,13 @@ router.post('/add/:id', function (req, res) {
         if (!error && response.statusCode == 200) {
 
             let serie = JSON.parse(body);
-            db.insert(serie,function(err,doc){
+            db.series.insert(serie,function(err,doc){
                 if(err) return res.status(500).json(err);
-                if(!err && doc) return res.json(doc);
+                if(!err && doc){
+                    //TODO: Get basePath from user settings
+                    scheduler.now('create-folder-structure',{title: doc.title, seasons: doc.seasons, basePath: '/home/leonardo/Videos/series'});
+                    return res.json(doc)
+                };
             });
 
         }
@@ -44,23 +58,36 @@ router.post('/add/:id', function (req, res) {
 
 });
 
-router.get('/find-torrent/:id',function(req,res){
+router.post('/schedule/:id',function(req,res){
 
-    db.findOne({ _id: req.params.id }, function (err, doc) {
+    let id = req.params.id;
+
+    db.series.findOne({ _id: id }, function (err, serie) {
         if(err) res.status(500).json(err);
-        else if(doc) {
-            tpb.search(doc.title + ' 1080p', {
-                category: '208',
-                orderBy: '7'
-            }).then(function(results){
-                res.json(results);
-            }).catch(function(err){
-                res.status(500).json(err);
+        else if(serie) {
+            serie.seasons.forEach(function(season){
+               season.episodes.forEach(function(episode){
+                   if(!episode.date) return;
+
+                   let dateToRun = new Date(Date.parse(episode.date));
+                   let data = {
+                       serieId: serie._id,
+                       serieName: serie.title,
+                       episodeNum: S(episode.episode).padLeft(2,'0').s,
+                       title: episode.title,
+                       season:  S(season.numSeason).padLeft(2,'0').s
+                   };
+
+                   episode.status = 'Scheduled';
+
+                   scheduler.schedule(dateToRun,'find-torrent',data);
+               });
             });
+            res.status(201).json({message: util.format('%s scheduled.',serie.title)});
+        }else{
+            res.status(404).json({message: util.format('%s not found, try to add it first ;)',id)});
         }
     });
-    //eB9tNhxlLqZNKNYi
-
 
 });
 
