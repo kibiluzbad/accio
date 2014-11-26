@@ -9,7 +9,6 @@ const
     util = require('util'),
     S = require('string');
 
-
 router.get('/', function (req, res) {
     db.find({}, function (err, docs) {
         if(err) res.status(500).json(err)
@@ -36,20 +35,24 @@ router.get('/search', function (req, res) {
 
 router.post('/add/:id', function (req, res) {
     let url = 'http://www.myapifilms.com/imdb?idIMDB='+req.params.id+'&format=JSON&aka=0&business=0&seasons=1&seasonYear=0&technical=0&lang=en-us&actors=N&biography=0&trailer=0&uniqueName=0&filmography=0&bornDied=0&starSign=0&actorActress=0&actorTrivia=0&movieTrivia=0&awards=0';
-
+    console.log(url);
     request(url,function (error, response, body) {
 
         if (!error && response.statusCode == 200) {
 
             let serie = JSON.parse(body);
-            db.series.insert(serie,function(err,doc){
+            db.settings.findOne(function(err,config){
                 if(err) return res.status(500).json(err);
-                if(!err && doc){
-                    //TODO: Get basePath from user settings
-                    scheduler.now('create-folder-structure',{title: doc.title, seasons: doc.seasons, basePath: '/home/leonardo/Videos/series'});
-                    return res.json(doc)
-                };
+                db.series.insert(serie,function(err,doc){
+                    if(err) return res.status(500).json(err);
+                    if(!err && doc){
+
+                        scheduler.now('create-folder-structure',{title: doc.title, seasons: doc.seasons, basePath: config.destinationPath});
+                        return res.json(doc)
+                    };
+                });
             });
+
 
         }
 

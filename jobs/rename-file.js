@@ -14,13 +14,19 @@ const
 
 scheduler.define('rename-file',{priority: 'high', concurrency: 10}, function(job, done) {
     let data = job.attrs.data;
-    let config = {destinationPath: '', defaultLanguage: 'pt-BR'};
+    let config={};
 
     log.info('rename-file','Renaming ');
 
     let subdb = new SubDb();
 
     async.waterfall([
+            function(next){
+                db.settings.findOne(function(err,doc){
+                    config = doc;
+                    next(err);
+                });
+            },
             function(next){
                 db.torrents.findOne({_id: data.torrentId},next)
             },
@@ -59,7 +65,7 @@ scheduler.define('rename-file',{priority: 'high', concurrency: 10}, function(job
                 let episode= util.format('Episode %s',S(torrent.episodeNum).padLeft(2,'0').s);
                 let path = path.join(config.destinationPath.path, torrent.serieName,episode);
                 fs.mkdir(path,function(err){
-                   next(err, path);
+                    next(err, path);
                 });
             },
             function(newPath,next) {
@@ -72,5 +78,5 @@ scheduler.define('rename-file',{priority: 'high', concurrency: 10}, function(job
                 job.fail(err.message);
             }
             done();
-    });
+        });
 });
