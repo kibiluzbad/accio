@@ -4,10 +4,33 @@ const
     express = require('express'),
     router = express.Router(),
     request = require('request'),
+    path = require('path'),
     db = require('./../infra/db.js'),
     scheduler = require('./../infra/scheduler.js'),
     util = require('util'),
-    S = require('string');
+    subdb = require('./../infra/subdb'),
+    S = require('string'),
+    settings = require('./../infra/settings');
+
+router.get('/test',function(req,res){
+    scheduler.now('rename-file',{"torrentId": "UC0vPjpomc3qCWtK", ids:[95], provider: 'transmission', path: "/mnt/downloads/Constantine.S01E01.Non.Est.Asylum.1080p.WEB-DL.DD5.1.H.264-ECI[rarbg]"});
+    res.json({message:'scheduled'});
+/*
+    let pathToFile = '/mnt/series/Constantine/Season 01/Episode 05/Danse Vaudou.mkv';
+    let language = 'pt';
+
+    subdb.getHash(pathToFile).then(function(hash){
+        console.log(hash);
+        let pathToSub = path.join(path.dirname(pathToFile), path.basename(pathToFile, path.extname(pathToFile))) + '.srt';
+        console.log(pathToSub);
+        return subdb.download(hash,language,pathToSub);
+    }).then(function(pathToSub){
+        res.json(pathToSub);
+    }).catch(function(err){
+        res.status(500).json(err);
+    });
+*/
+});
 
 router.get('/', function (req, res) {
     db.find({}, function (err, docs) {
@@ -41,8 +64,8 @@ router.post('/add/:id', function (req, res) {
         if (!error && response.statusCode == 200) {
 
             let serie = JSON.parse(body);
-            db.settings.findOne(function(err,config){
-                if(err) return res.status(500).json(err);
+            console.log(serie);
+            settings.then(function(config){
                 db.series.insert(serie,function(err,doc){
                     if(err) return res.status(500).json(err);
                     if(!err && doc){

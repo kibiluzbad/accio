@@ -3,8 +3,10 @@
 const
     scheduler = require('../infra/scheduler'),
     log = require('npmlog'),
+    path = require('path'),
     util = require('util'),
-    db = require('./../infra/db');
+    db = require('./../infra/db'),
+    settings = require('./../infra/settings');
 
 scheduler.define('check-download-completed',{concurrency: 20} , function(job, done) {
     let data = job.attrs.data;
@@ -18,7 +20,7 @@ scheduler.define('check-download-completed',{concurrency: 20} , function(job, do
     let provider = require(util.format('./../torrent-clients/%s-provider',data.provider));
 
     provider.get(data.ids,function(err,args){
-        db.settings.findOne(function(err,config){
+        settings.then(function(config){
             log.info('check-download-completed',util.format('Check torrent %s, percent done %s %',data.ids[0],Math.ceil(args.torrents[0].percentDone * 100)));
             if(err){
                 log.error('check-download-completed',err);
@@ -33,11 +35,7 @@ scheduler.define('check-download-completed',{concurrency: 20} , function(job, do
                 db.torrents.update({_id: data.torrentId},{ $set:{status: 'downloaded'}},function(err){
                     if(err) log.error('check-download-completed',err);
 
-                    provider.remove(data.ids,function(err){
-                        err ? log.error('check-download-completed', err) :log.info('check-download-completed', util.format('Torrent %s removed',data.ids[0]));
-                    });
-
-                    scheduler.now('rename-file',{torrentId: data.torrentId, path: path.join(config.downloadDir, args.torrents[0].name)});
+                    scheduler.now('rename-file',{torrentId: data.torrentId, path: path.join(config.downloadDir, args.torrents[0].name),provider: data.provider, ids: data.ids});
                 });
             }
             done();
