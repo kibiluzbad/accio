@@ -13,10 +13,11 @@ const
     settings = require('./../infra/settings');
 
 router.get('/test',function(req,res){
-    //scheduler.now('rename-file',{"torrentId": "UC0vPjpomc3qCWtK", ids:[95], provider: 'transmission', path: "/mnt/downloads/Constantine.S01E01.Non.Est.Asylum.1080p.WEB-DL.DD5.1.H.264-ECI[rarbg]"});
+    //scheduler.now('rename-file',{"torrentId": "HDIA1PLYCFhNkrEu", ids:[96], provider: 'transmission', path: "/mnt/downloads/Constantine.S01E03.The.Devils.Vinyl.1080p.WEB-DL.DD5.1.H.264-ECI[rarbg]"});
     //res.json({message:'scheduled'});
 
-    let pathToFile = '/mnt/series/Constantine/Season 01/Episode 06/Rage of Caliban.mkv';
+
+    let pathToFile = '/mnt/series/Constantine/Season 01/Episode 03/The Devil\'s Vinyl.mkv';
     let language = 'pt';
 
     subdb.getHash(pathToFile).then(function(hash){

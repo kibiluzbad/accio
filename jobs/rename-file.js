@@ -95,9 +95,11 @@ scheduler.define('rename-file',{priority: 'high', concurrency: 10}, function(job
                 ncp(data.path,newPath,next);
             },
             function(next){
-                provider.remove(data.ids,function(err){
-                    err ? log.error('rename-file', err) :log.info('rename-file', util.format('Torrent %s removed',data.ids[0]));
-                    next(err);
+                provider.then(function(provider){
+                    provider.remove(data.ids,function(err){
+                        err ? log.error('rename-file', err) :log.info('rename-file', util.format('Torrent %s removed',data.ids[0]));
+                        next(err);
+                    });
                 });
             }
         ],

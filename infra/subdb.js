@@ -6,7 +6,8 @@ const
     path = require('path'),
     util = require('util'),
     fs = require('fs'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    iconv = require('iconv-lite');
 
 function download(hash, language, pathToDownload) {
     let defered = Q.defer();
@@ -25,7 +26,8 @@ function download(hash, language, pathToDownload) {
         if (200 === response.statusCode){
             let normalized = path.normalize(pathToDownload);
 
-            return fs.writeFile(normalized,body,function(err){
+            let decoded = iconv.decode(body, 'UTF-8');
+            return fs.writeFile(normalized,decoded,function(err){
                 if (err) return defered.reject(err);
 
                 return defered.resolve(normalized);
