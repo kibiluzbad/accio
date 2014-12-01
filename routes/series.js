@@ -13,10 +13,10 @@ const
     settings = require('./../infra/settings');
 
 router.get('/test',function(req,res){
-    scheduler.now('rename-file',{"torrentId": "UC0vPjpomc3qCWtK", ids:[95], provider: 'transmission', path: "/mnt/downloads/Constantine.S01E01.Non.Est.Asylum.1080p.WEB-DL.DD5.1.H.264-ECI[rarbg]"});
-    res.json({message:'scheduled'});
-/*
-    let pathToFile = '/mnt/series/Constantine/Season 01/Episode 05/Danse Vaudou.mkv';
+    //scheduler.now('rename-file',{"torrentId": "UC0vPjpomc3qCWtK", ids:[95], provider: 'transmission', path: "/mnt/downloads/Constantine.S01E01.Non.Est.Asylum.1080p.WEB-DL.DD5.1.H.264-ECI[rarbg]"});
+    //res.json({message:'scheduled'});
+
+    let pathToFile = '/mnt/series/Constantine/Season 01/Episode 06/Rage of Caliban.mkv';
     let language = 'pt';
 
     subdb.getHash(pathToFile).then(function(hash){
@@ -29,7 +29,7 @@ router.get('/test',function(req,res){
     }).catch(function(err){
         res.status(500).json(err);
     });
-*/
+
 });
 
 router.get('/', function (req, res) {
