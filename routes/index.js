@@ -5,8 +5,7 @@ const
     router = express.Router();
 
 router.get('/', function (req, res) {
-    let pack = require('./../package.json');
-    res.json({message: 'I\'m alive! :)',version: pack.version, name: pack.name});
+    res.sendfile('./public/app/index.html');
 });
 
 module.exports = router;

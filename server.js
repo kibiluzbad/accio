@@ -11,6 +11,8 @@ const
     scheduler = require('./infra/scheduler');
 
 app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(express.static(__dirname + '/public/app'));
+app.use('/bower_components',express.static(__dirname + '/public/bower_components'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 
